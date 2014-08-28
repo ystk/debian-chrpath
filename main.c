@@ -31,7 +31,8 @@ static struct option long_options[] =
   {"keepgoing", 0, 0, 'k'},
   {"list",      0, 0, 'l'},
   {"replace",   1, 0, 'r'},
-  {"version",   0, 0, 'v'}
+  {"version",   0, 0, 'v'},
+  {0, 0, 0, 0}
 };
 
 #else /* not HAVE_GETOPT_LONG */
@@ -51,6 +52,7 @@ usage(char *progname)
   printf("   -r <path>|--replace <path>  Replace current rpath/runpath setting\n");
   printf("                               with the path given\n");
   printf("   -l|--list                   List the current rpath/runpath (default)\n");
+  printf("   -k|--keepgoing              Do not fail on first error\n");
   printf("   -h|--help                   Show this usage information.\n");
 #ifndef HAVE_GETOPT_LONG
   printf("\n *** The long options are not available on this platform");
@@ -109,6 +111,7 @@ main(int argc, char * const argv[])
         break;
       default:
         printf("Invalid argument '%c'\n", opt);
+	/* Fall through */
       case 'h':
         usage(argv[0]);
         exit(0);

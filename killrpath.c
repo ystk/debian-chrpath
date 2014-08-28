@@ -35,7 +35,7 @@ killrpath(const char *filename)
    Elf_Ehdr ehdr;
    int i;
    Elf_Phdr phdr;
-   Elf_Dyn *dyns;
+   void *dyns;
    int dynpos;
 
    fd = elf_open(filename, O_RDWR, &ehdr);
@@ -49,40 +49,58 @@ killrpath(const char *filename)
    if (0 != elf_find_dynamic_section(fd, &ehdr, &phdr))
    {
      perror("found no dynamic section");
+     elf_close(fd);
      return 1;
    }
 
-   dyns = malloc(phdr.p_memsz);
+   dyns = malloc(PHDR(p_memsz));
    if (dyns == NULL)
      {
        perror ("allocating memory for dynamic section");
+       elf_close(fd);
        return 1;
      }
-   memset(dyns, 0, phdr.p_memsz);
-   if (lseek(fd, phdr.p_offset, SEEK_SET) == -1
-       || read(fd, dyns, phdr.p_filesz) != (int)phdr.p_filesz)
+   memset(dyns, 0, PHDR(p_memsz));
+   if (lseek(fd, PHDR(p_offset), SEEK_SET) == -1
+       || read(fd, dyns, PHDR(p_filesz)) != (ssize_t)PHDR(p_filesz))
      {
        perror ("reading dynamic section");
+       free(dyns);
+       elf_close(fd);
        return 1;
      }
 
    dynpos = 0;
-   for (i = 0; dyns[i].d_tag != DT_NULL; i++)
+   for (i = 0; DYNSS(i, d_tag) != DT_NULL; i++)
      {
-       dyns[dynpos] = dyns[i];
-       if ( ! elf_dynpath_tag(dyns[i].d_tag) )
+       if (is_e32())
+        ((Elf32_Dyn *)dyns)[dynpos] = ((Elf32_Dyn *)dyns)[i];
+       else
+        ((Elf64_Dyn *)dyns)[dynpos] = ((Elf64_Dyn *)dyns)[i];
+       if ( ! elf_dynpath_tag(DYNSS(i, d_tag)) )
         dynpos++;
      }
    for (; dynpos < i; dynpos++)
-     dyns[dynpos].d_tag = DT_NULL;
+     {
+       if (is_e32()) {
+        ((Elf32_Dyn *)dyns)[dynpos].d_tag = DT_NULL;
+        ((Elf32_Dyn *)dyns)[dynpos].d_un.d_val = 0x0;
+       } else {
+        ((Elf64_Dyn *)dyns)[dynpos].d_tag = DT_NULL;
+        ((Elf64_Dyn *)dyns)[dynpos].d_un.d_val = 0x0;
+       }
+     }
 
-   if (lseek(fd, phdr.p_offset, SEEK_SET) == -1
-       || write(fd, dyns, phdr.p_filesz) != (int)phdr.p_filesz)
+   if (lseek(fd, PHDR(p_offset), SEEK_SET) == -1
+       || write(fd, dyns, PHDR(p_filesz)) != (int)PHDR(p_filesz))
      {
        perror ("writing dynamic section");
+       free(dyns);
+       elf_close(fd);
        return 1;
      }
 
+   free(dyns);
    elf_close(fd);
 
    return 0;
