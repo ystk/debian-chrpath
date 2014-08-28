@@ -1,3 +1,32 @@
+New in 0.16 released 2014-01-14:
+ * Fixed all minor bugs discovered by Coverity.
+ * Updated config.sub and config.guess from the GNU project.
+ * Mention new project mailing list in the documentation.
+
+New in 0.15 released 2013-11-24:
+ * Updated config.sub and config.guess from the GNU project to work with
+   newer architectures.  Thanks to isha vishnoi for the heads up.
+ * Updated README with current URLs.
+ * Added byteswap fix found in Ubuntu, credited Jeremy Kerr and
+   Matthias Klose.
+ * Added missing help for -k|--keepgoing option, using patch by Petr
+   Machata found in Fedora.
+ * Rewrite removal of RPATH/RUNPATH to make sure the entry in .dynamic
+   is a NULL terminated string.  Based on patch found in Fedora
+   credited Axel Thimm and Christian Krause.
+
+New in 0.14 released 2011-09-27:
+ * Updated debian build rules from the current Debian package.
+ * Applied patch from debian to support Hurd and k*BSD.
+ * Moved project to <URL: https://alioth.debian.org/projects/chrpath/ >
+ * Updated autoconf/automake-related files to latest versions.
+ * Document rpath size limitation better in the manual page.
+   Patch from Eric Raymond.
+ * Fix typo in handling of long arguments.  Patch from Eric Raymond.
+ * Now works even when the ELF file has endianness/word length 
+   different from the host machime.  Patch from Javier Serrano Polo,
+   adjusted to compile with -ansi and -pedantic.
+
 New in 0.13 released 2004-09-19:
  * Change exit code handling.  Return an error if the operation fail.
  * New argument -k (--keepgoing) to not stop on first error.

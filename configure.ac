@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT("chrpath", "0.13", pere@hungry.com)
+AC_INIT(chrpath, 0.16, chrpath-devel@lists.alioth.debian.org)
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE("chrpath", "0.13")
+AM_INIT_AUTOMAKE("chrpath", "0.16")
 
 AC_CONFIG_SRCDIR(chrpath.c)
 AM_CONFIG_HEADER(config.h)
@@ -33,8 +33,6 @@ AC_CHECK_FUNCS(getopt_long)
 
 if eval "test x$GCC = xyes"; then
   for flag in \
-      -ansi \
-      -pedantic \
       -W \
       -Wall \
       -Wcast-align \

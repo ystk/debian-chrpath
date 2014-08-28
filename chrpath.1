@@ -40,7 +40,8 @@ Delete current rpath or runpath setting
 Convert the rpath setting into a runpath setting
 .TP
 .BI -r\ \fI<path>\fP\ |\ --replace\ \fI<path>\fP
-Replace current rpath or runpath setting with the path given
+Replace current rpath or runpath setting with the path given.  The new
+path must be shorter or the same length as the current path.
 .TP
 .BR -k \ |\  --keepgoing
 Do not fail on first error, but process all arguments before returning
@@ -59,6 +60,13 @@ If all operations were successful
 .BR > 0
 if one of the operations failed.  A failing operation terminates
 the program unless -k is specified.
+
+.SH BUGS
+This program cannot create an RPATH tag if the ELF does not have one,
+and it can only replace an RPATH with one of equal or shorter
+length. (Moving ELF sections following a lengthened string table would
+be difficult and error-prone at best, and is sometimes outright
+impossible due to issues like limited ranges in jump instructions.)
 
 .SH AUTHOR
 The chrpath program was written by Petter Reinholdtsen
